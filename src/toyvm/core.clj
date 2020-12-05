@@ -15,10 +15,19 @@
 
     (seq exp)
     (case (first exp)
+      ;; special forms go here
       'def
       (let [[_ name subexp] exp]
         (concat (compile subexp)
-                [[:store-name name]])))
+                [[:store-name name]]))
+
+      ;; else fn call
+      (let [[fname & args] exp
+            nargs (count args)
+            arg-code (mapcat compile args)]
+        (concat (compile fname)
+                arg-code
+                [[:call-function nargs]])))
 
     :else
     (u/throw+ "Not implemented: " exp)))
@@ -65,6 +74,15 @@
                    (cons (lookup-in env arg)
                          stack)
                    env)
+
+            :call-function
+            (let [nargs arg
+                  args (reverse (take nargs stack))
+                  fn (nth stack nargs)]
+              (recur (inc pc)
+                     (cons (fn args)
+                           (drop (inc nargs) stack))
+                     env))
 
             ;; else
             (u/throw+ "Not implemented: " ins)))
