@@ -2,7 +2,8 @@
   "Clojure translation of: https://bernsteinbear.com/blog/bytecode-interpreters/"
   (:gen-class)
   (:refer-clojure :exclude [compile eval])
-  (:require [toyvm.util :as u]))
+  (:require [toyvm.util :as u]
+            [clojure.pprint :refer [pprint]]))
 
 (defn compile
   [exp]
@@ -108,6 +109,7 @@
                                         body-env)
                                   :stack
                                   first))
+
                            :else
                            (u/throw+ "Cannot call: " fn))]
               (recur (inc pc)
@@ -143,7 +145,36 @@
 
             ;; else
             (u/throw+ "Not implemented: " ins)))
-        {:pc pc
-         :stack stack
-         :env env
-         :code code}))))
+        {:stack stack
+         :env env}))))
+
+(def DEFAULT-ENV
+  {:table
+   {'+ (fn [args]
+         (apply +' args))
+    '- (fn [args]
+         (apply - args))
+    '* (fn [args]
+         (apply *' args))
+    '/ (fn [args]
+         (apply / args))
+    '< (fn [args]
+         (apply < args))
+    '> (fn [args]
+         (apply > args))}})
+
+(defn -main []
+  (loop [env DEFAULT-ENV]
+    (print "> ")
+    (flush)
+    (let [code-in (read)
+          bytecode (compile code-in)
+
+          {:keys [stack env]}
+          (try
+            (eval bytecode env)
+            (catch Exception e
+              (println (.getMessage e))
+              {:env env}))]
+      (pprint (first stack))
+      (recur env))))
