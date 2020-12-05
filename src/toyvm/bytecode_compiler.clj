@@ -1,8 +1,11 @@
 (ns toyvm.bytecode-compiler
+  (:gen-class)
   (:refer-clojure :exclude [compile])
-  (:require [toyvm.util :as u]))
+  (:require [clojure.pprint :refer [pprint]]
+            [toyvm.util :as u]))
 
 (defn compile
+  "Recursively compiles the given form to bytcodes."
   [exp]
   (cond
     (integer? exp)
@@ -45,3 +48,15 @@
 
     :else
     (u/throw+ "Not implemented: " exp)))
+
+(defn -main
+  "Reads the lisp forms in the given edn file
+  compiles all of them to bytecode, and
+  writes to out.edn"
+  [filename]
+  (let [bytecode (->> filename
+                      u/read-file 
+                      (mapcat compile))
+        out-text (with-out-str
+                   (pprint bytecode))]
+    (spit "out.edn" out-text)))

@@ -1,0 +1,15 @@
+[
+
+ (def dec
+   (fn [n]
+     (- n 1)))
+
+ (def fact
+   (fn [n]
+     (if (< n 2)
+       1
+       (* n (fact (dec n))))))
+
+ (fact 5)
+
+]
