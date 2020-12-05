@@ -39,9 +39,9 @@
                            (fn args)
 
                            (= ::fn (type fn))
-                           (let [actuals (zipmap (:params fn)
-                                                 args)
-                                 body-env {:table actuals
+                           (let [actuals (zipmap (:params fn) args)
+                                 captured (env/collapse env)
+                                 body-env {:table (merge captured actuals)
                                            :parent (:env fn)}]
                              (->> (eval (:body-code fn)
                                         body-env)

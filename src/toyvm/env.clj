@@ -1,7 +1,7 @@
 (ns toyvm.env
   (:require [toyvm.util :as u]))
 
-(def DEFAULT-ENV
+(def ^:const DEFAULT-ENV
   {:table
    {'+ (fn [args]
          (apply +' args))
@@ -31,3 +31,16 @@
 
     :else
     (u/throw+ "Not defined: " key)))
+
+(defn collapse
+  "Collapses all entries
+  in the environment heirarchy
+  into a single hashmap."
+  [env]
+  (reduce (fn [entries env]
+            (merge (:table env)
+                   entries))
+          (:table env)
+          (->> env
+               (iterate :parent)
+               (take-while some?))))
