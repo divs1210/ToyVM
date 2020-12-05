@@ -16,7 +16,7 @@ by **Max Bernstein** with the following changes:
 ## Usage
 
 ### Start a REPL
-    
+
     $ rlwrap lein do clean, run
     ==================
     === ToyVM REPL ===
@@ -38,11 +38,11 @@ Compile the example file:
     [
 
      (def dec
-       (fn [n]
+       (fn (n)
          (- n 1)))
 
      (def fact
-       (fn [n]
+       (fn (n)
          (if (< n 2)
            1
            (* n (fact (dec n))))))
