@@ -16,10 +16,20 @@
     (seq exp)
     (case (first exp)
       ;; special forms go here
-      'def
+      def
       (let [[_ name subexp] exp]
         (concat (compile subexp)
                 [[:store-name name]]))
+
+      if
+      (let [[_ condn then else] exp
+            then-code (compile then)
+            else-code (concat (compile else)
+                              [[:relative-jump (count then-code)]])]
+        (concat (compile condn)
+                [[:relative-jump-if-true (count else-code)]]
+                else-code
+                then-code))
 
       ;; else fn call
       (let [[fname & args] exp
@@ -84,8 +94,22 @@
                            (drop (inc nargs) stack))
                      env))
 
+            :relative-jump-if-true
+            (let [[condn stack] stack]
+              (recur (inc (if condn
+                            (+ pc arg)
+                            pc))
+                     stack
+                     env))
+
+            :relative-jump
+            (recur (inc (+ pc arg))
+                   stack
+                   env)
+
             ;; else
             (u/throw+ "Not implemented: " ins)))
         {:pc pc
          :stack stack
-         :env env}))))
+         :env env
+         :code code}))))
