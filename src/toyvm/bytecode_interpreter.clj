@@ -89,9 +89,9 @@
          :env env}))))
 
 (defn -main
-  "Interprets a bytecode edn file and prints the top of the stack."
+  "Interprets a bytecode edn file."
   [filename]
   (let [env env/DEFAULT-ENV
-        code (u/read-file filename)
-        result (eval code env)]
-    (pprint (-> result :stack first))))
+        code (u/read-file filename)]
+    (eval code env)
+    (println)))

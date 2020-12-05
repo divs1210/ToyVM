@@ -47,7 +47,7 @@ Compile the example file:
            1
            (* n (fact (dec n))))))
 
-     (fact 5)
+     (print (fact 5))
 
     ]
 

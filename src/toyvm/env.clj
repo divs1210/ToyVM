@@ -14,7 +14,9 @@
     '< (fn [args]
          (apply < args))
     '> (fn [args]
-         (apply > args))}})
+         (apply > args))
+    'print (fn [args]
+             (apply print args))}})
 
 (defn define-in
   [env key val]
