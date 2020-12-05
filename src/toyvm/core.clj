@@ -31,6 +31,12 @@
                 else-code
                 then-code))
 
+      fn
+      (let [[_ params body] exp]
+        [[:push-const params]
+         [:push-const (compile body)]
+         [:make-function (count params)]])
+
       ;; else fn call
       (let [[fname & args] exp
             nargs (count args)
@@ -88,9 +94,24 @@
             :call-function
             (let [nargs arg
                   args (reverse (take nargs stack))
-                  fn (nth stack nargs)]
+                  fn (nth stack nargs)
+                  result (cond
+                           (fn? fn)
+                           (fn args)
+
+                           (= ::fn (type fn))
+                           (let [actuals (zipmap (:params fn)
+                                                 args)
+                                 body-env {:table actuals
+                                           :parent (:env fn)}]
+                             (->> (eval (:body-code fn)
+                                        body-env)
+                                  :stack
+                                  first))
+                           :else
+                           (u/throw+ "Cannot call: " fn))]
               (recur (inc pc)
-                     (cons (fn args)
+                     (cons result
                            (drop (inc nargs) stack))
                      env))
 
@@ -106,6 +127,19 @@
             (recur (inc (+ pc arg))
                    stack
                    env)
+
+            :make-function
+            (let [nargs arg
+                  [body-code params & stack] stack]
+              (assert (= nargs (count params))
+                      "Wrong number of args passed to fn.")
+              (recur (inc pc)
+                     (cons ^{:type ::fn}
+                           {:params params
+                            :body-code body-code
+                            :env env}
+                           stack)
+                     env))
 
             ;; else
             (u/throw+ "Not implemented: " ins)))
