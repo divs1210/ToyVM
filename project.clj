@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]]
   :main ^:skip-aot toyvm.core
   :target-path "target/%s"
-  :aliases {"bcompile" ["run" "-m" "toyvm.bytecode-compiler"]}
+  :aliases {"bcompile" ["do" "clean," "run" "-m" "toyvm.bytecode-compiler"]
+            "binterpret" ["do" "clean," "run" "-m" "toyvm.bytecode-interpreter"]}
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})

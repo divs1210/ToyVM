@@ -1,6 +1,8 @@
 (ns toyvm.bytecode-interpreter
+  (:gen-class)
   (:refer-clojure :exclude [eval])
-  (:require [toyvm.env :as env]
+  (:require [clojure.pprint :refer [pprint]]
+            [toyvm.env :as env]
             [toyvm.util :as u]))
 
 (defn eval
@@ -85,3 +87,11 @@
             (u/throw+ "Not implemented: " ins)))
         {:stack stack
          :env env}))))
+
+(defn -main
+  "Interprets a bytecode edn file and prints the top of the stack."
+  [filename]
+  (let [env env/DEFAULT-ENV
+        code (u/read-file filename)
+        result (eval code env)]
+    (pprint (-> result :stack first))))
