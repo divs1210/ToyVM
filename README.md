@@ -89,6 +89,10 @@ Interpret the compiled output:
     $ lein binterpret out.edn
     120
 
+### Compile and run in one go
+
+    $ lein do clean, bcompile factorial.edn, binterpret out.edn
+    120
 
 ## License
 
