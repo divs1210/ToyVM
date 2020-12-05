@@ -1,36 +1,98 @@
-# toyvm
+# ToyVM
 
-FIXME: description
+**Bytecode VM for a simple lisp**
 
-## Installation
+* At the REPL, all forms are converted to bytecode, which is interpreted
+* Possible to AOT compile a lisp file to bytecode
+* Possible to directly interpret a bytecode file
 
-Download from http://example.com/FIXME.
+Heavily inspired by [this blogpost](https://bernsteinbear.com/blog/bytecode-interpreters/)
+by **Max Bernstein** with the following changes:
+* late binding to enable recursion
+* no `define`, as recursion possible via normal lambdas
+* `lambda` is called `fn`
+* written in Clojure in a functional manner
 
 ## Usage
 
-FIXME: explanation
+### Start a REPL
+    
+    $ rlwrap lein do clean, run
+    ==================
+    === ToyVM REPL ===
+    ==================
 
-    $ java -jar toyvm-0.1.0-standalone.jar [args]
+    > (def dec
+        (fn (x)
+          (- x 1)))
+    nil
 
-## Options
+    > (dec 43)
+    42
 
-FIXME: listing of options this app accepts.
+### Compile to bytecode
 
-## Examples
+Compile the example file:
 
-...
+    $ cat factorial.edn
+    [
 
-### Bugs
+     (def dec
+       (fn [n]
+         (- n 1)))
 
-...
+     (def fact
+       (fn [n]
+         (if (< n 2)
+           1
+           (* n (fact (dec n))))))
 
-### Any Other Sections
-### That You Think
-### Might be Useful
+     (fact 5)
+
+    ]
+
+    $ lein bcompile factorial.edn
+
+    $ cat out.edn
+    ([:push-const [n]]
+     [:push-const
+      ([:push-name -] [:push-name n] [:push-const 1] [:call-function 2])]
+     [:make-function 1]
+     [:store-name dec]
+     [:push-const [n]]
+     [:push-const
+      ([:push-name <]
+       [:push-name n]
+       [:push-const 2]
+       [:call-function 2]
+       [:relative-jump-if-true 9]
+       [:push-name *]
+       [:push-name n]
+       [:push-name fact]
+       [:push-name dec]
+       [:push-name n]
+       [:call-function 1]
+       [:call-function 1]
+       [:call-function 2]
+       [:relative-jump 1]
+       [:push-const 1])]
+     [:make-function 1]
+     [:store-name fact]
+     [:push-name fact]
+     [:push-const 5]
+     [:call-function 1])
+
+### Run bytecode file
+
+Interpret the compiled output:
+
+    $ lein binterpret out.edn
+    120
+
 
 ## License
 
-Copyright © 2020 FIXME
+Copyright © 2020 Divyansh Prakash
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
