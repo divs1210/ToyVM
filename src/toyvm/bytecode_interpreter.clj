@@ -1,8 +1,7 @@
 (ns toyvm.bytecode-interpreter
   (:gen-class)
   (:refer-clojure :exclude [eval])
-  (:require [clojure.pprint :refer [pprint]]
-            [toyvm.env :as env]
+  (:require [toyvm.env :as env]
             [toyvm.util :as u]))
 
 (defn eval
