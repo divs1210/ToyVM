@@ -41,9 +41,11 @@
 
                            (= ::fn (type fn))
                            (let [actuals (zipmap (:params fn) args)
-                                 captured (env/collapse env)
-                                 body-env {:table (merge captured actuals)
-                                           :parent (:env fn)}]
+                                 parent-env (update (:env fn)
+                                                    :table
+                                                    merge (env/collapse env))
+                                 body-env {:table actuals
+                                           :parent parent-env}]
                              (->> (eval (:body-code fn)
                                         body-env)
                                   :stack
