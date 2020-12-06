@@ -42,7 +42,7 @@
   (reduce (fn [entries env]
             (merge (:table env)
                    entries))
-          (:table env)
+          {}
           (->> env
                (iterate :parent)
                (take-while some?))))
