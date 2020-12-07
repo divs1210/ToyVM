@@ -38,6 +38,13 @@
          [:push-const (compile body)]
          [:make-function (count params)]])
 
+      recfn
+      (let [[_ name params body] exp]
+        [[:push-const name]
+         [:push-const params]
+         [:push-const (compile body)]
+         [:make-recursive-function (count params)]])
+
       ;; else fn call
       (let [[fname & args] exp
             nargs (count args)

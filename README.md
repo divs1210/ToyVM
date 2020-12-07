@@ -8,9 +8,9 @@
 
 Heavily inspired by [this blogpost](https://bernsteinbear.com/blog/bytecode-interpreters/)
 by **Max Bernstein** with the following changes:
-* late binding to enable recursion
-* no `define`, as recursion possible via normal lambdas
 * `lambda` is called `fn`
+* `recfn` is for creating recursive lambdas
+* `define` not required
 * written in Clojure in a functional manner
 
 ## Usage
@@ -42,7 +42,7 @@ Compile the example file:
          (- n 1)))
 
      (def fact
-       (fn (n)
+       (recfn fact (n)
          (if (< n 2)
            1
            (* n (fact (dec n))))))
@@ -54,7 +54,7 @@ Compile the example file:
     $ lein bcompile factorial.edn
 
     $ cat out.edn
-    [[:push-const [n]]
+    [[:push-const (n)]
      [:push-const
       [[:push-name -]
        [:push-name n]
@@ -62,7 +62,8 @@ Compile the example file:
        [:call-function 2]]]
      [:make-function 1]
      [:store-name dec]
-     [:push-const [n]]
+     [:push-const fact]
+     [:push-const (n)]
      [:push-const
       [[:push-name <]
        [:push-name n]
@@ -78,11 +79,13 @@ Compile the example file:
        [:call-function 1]
        [:call-function 2]
        [:relative-jump 1]
-       [:push-const 1]]]
-     [:make-function 1]
+       [:push-const 1])]
+     [:make-recursive-function 1]
      [:store-name fact]
+     [:push-name print]
      [:push-name fact]
      [:push-const 5]
+     [:call-function 1]
      [:call-function 1]]
 
 ### Run bytecode file

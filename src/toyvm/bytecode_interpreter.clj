@@ -41,15 +41,21 @@
 
                            (= ::fn (type fn))
                            (let [actuals (zipmap (:params fn) args)
-                                 parent-env (update (:env fn)
-                                                    :table
-                                                    merge (env/collapse env))
                                  body-env {:table actuals
-                                           :parent parent-env}]
-                             (->> (eval (:body-code fn)
-                                        body-env)
-                                  :stack
-                                  first))
+                                           :parent (:env fn)}
+                                 result (eval (:body-code fn)
+                                              body-env)]
+                             (-> result :stack first))
+
+                           (= ::recfn (type fn))
+                           (let [param-bindings (zipmap (:params fn) args)
+                                 this-binding {(:name fn) fn}
+                                 actuals (merge param-bindings this-binding)
+                                 body-env {:table actuals
+                                           :parent (:env fn)}
+                                 result (eval (:body-code fn)
+                                              body-env)]
+                             (-> result :stack first))
 
                            :else
                            (u/throw+ "Cannot call: " fn))]
@@ -79,6 +85,20 @@
               (recur (inc pc)
                      (cons ^{:type ::fn}
                            {:params params
+                            :body-code body-code
+                            :env env}
+                           stack)
+                     env))
+
+            :make-recursive-function
+            (let [nargs arg
+                  [body-code params name & stack] stack]
+              (assert (= nargs (count params))
+                      "Wrong number of args passed to fn.")
+              (recur (inc pc)
+                     (cons ^{:type ::recfn}
+                           {:name name
+                            :params params
                             :body-code body-code
                             :env env}
                            stack)
