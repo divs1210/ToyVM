@@ -2,9 +2,10 @@
   (:gen-class)
   (:refer-clojure :exclude [eval])
   (:require [toyvm.env :as env]
-            [toyvm.util :as u]))
+            [toyvm.util :as u]
+            [xodarap.core :refer [defrec rec]]))
 
-(defn eval
+(defrec eval
   [code env]
   (let [code (vec code)
         len (count code)]
@@ -43,8 +44,8 @@
                            (let [actuals (zipmap (:params fn) args)
                                  body-env {:table actuals
                                            :parent (:env fn)}
-                                 result (eval (:body-code fn)
-                                              body-env)]
+                                 result (rec (eval (:body-code fn)
+                                                   body-env))]
                              (-> result :stack first))
 
                            (= ::recfn (type fn))
@@ -53,8 +54,8 @@
                                  actuals (merge param-bindings this-binding)
                                  body-env {:table actuals
                                            :parent (:env fn)}
-                                 result (eval (:body-code fn)
-                                              body-env)]
+                                 result (rec (eval (:body-code fn)
+                                                   body-env))]
                              (-> result :stack first))
 
                            :else

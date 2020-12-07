@@ -12,6 +12,7 @@ by **Max Bernstein** with the following changes:
 * `recfn` is for creating recursive lambdas
 * `define` not required
 * written in Clojure in a functional manner
+* stackless evaluation using [xodarap](https://github.com/divs1210/xodarap)
 
 ## Usage
 
