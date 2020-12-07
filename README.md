@@ -54,14 +54,17 @@ Compile the example file:
     $ lein bcompile factorial.edn
 
     $ cat out.edn
-    ([:push-const [n]]
+    [[:push-const [n]]
      [:push-const
-      ([:push-name -] [:push-name n] [:push-const 1] [:call-function 2])]
+      [[:push-name -]
+       [:push-name n]
+       [:push-const 1]
+       [:call-function 2]]]
      [:make-function 1]
      [:store-name dec]
      [:push-const [n]]
      [:push-const
-      ([:push-name <]
+      [[:push-name <]
        [:push-name n]
        [:push-const 2]
        [:call-function 2]
@@ -75,12 +78,12 @@ Compile the example file:
        [:call-function 1]
        [:call-function 2]
        [:relative-jump 1]
-       [:push-const 1])]
+       [:push-const 1]]]
      [:make-function 1]
      [:store-name fact]
      [:push-name fact]
      [:push-const 5]
-     [:call-function 1])
+     [:call-function 1]]
 
 ### Run bytecode file
 
