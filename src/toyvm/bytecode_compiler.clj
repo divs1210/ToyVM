@@ -8,7 +8,8 @@
   "Recursively compiles the given form to bytcodes."
   [exp]
   (cond
-    (integer? exp)
+    (or (number? exp)
+        (string?  exp))
     [[:push-const exp]]
 
     (symbol? exp)
