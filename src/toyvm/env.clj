@@ -16,7 +16,9 @@
     '> (fn [args]
          (apply > args))
     'print (fn [args]
-             (apply print args))}})
+             (apply print args))
+    'read (fn [_]
+            (read))}})
 
 (defn define-in
   [env key val]
@@ -33,16 +35,3 @@
 
     :else
     (u/throw+ "Not defined: " key)))
-
-(defn collapse
-  "Collapses all entries
-  in the environment heirarchy
-  into a single hashmap."
-  [env]
-  (reduce (fn [entries env]
-            (merge (:table env)
-                   entries))
-          {}
-          (->> env
-               (iterate :parent)
-               (take-while some?))))
