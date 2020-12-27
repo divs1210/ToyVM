@@ -46,6 +46,10 @@
          [:push-const (compile body)]
          [:make-recursive-function (count params)]])
 
+      do
+      (let [[_ & exps] exp]
+        (mapcat compile exps))
+
       ;; else fn call
       (let [[fname & args] exp
             nargs (count args)
