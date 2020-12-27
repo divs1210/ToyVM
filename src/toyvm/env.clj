@@ -16,7 +16,8 @@
     '> (fn [args]
          (apply > args))
     'print (fn [args]
-             (apply print args))
+             (apply print args)
+             (flush))
     'read (fn [_]
             (read))}})
 
