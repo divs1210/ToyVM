@@ -58,13 +58,18 @@
     (u/throw+ "Not implemented: " exp)))
 
 (defn -main
-  "Reads the lisp forms in the given edn file
-  compiles all of them to bytecode, and
-  writes to out.edn"
-  [filename]
+  "Reads the lisp forms in the given edn file,
+  compiles all of them to bytecode,
+  writes to target/out.edn."
+  [filename & {:strs [-out-dir -out-file]
+               :or {-out-dir "target"
+                    -out-file "out.edn"}}]
   (let [bytecode (->> filename
                       u/read-file 
                       (mapcat compile))
         out-text (with-out-str
-                   (pprint bytecode))]
-    (spit "out.edn" out-text)))
+                   (pprint bytecode))
+        out-filepath (str -out-dir
+                          "/"
+                          -out-file)]
+    (spit out-filepath out-text)))
