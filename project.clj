@@ -7,7 +7,7 @@
                  [xodarap "0.2.1"]]
   :main ^:skip-aot toyvm.core
   :target-path "target/%s"
-  :aliases {"bcompile" ["do" "clean," "run" "-m" "toyvm.bytecode-compiler"]
-            "binterpret" ["do" "clean," "run" "-m" "toyvm.bytecode-interpreter"]}
+  :aliases {"bcompile" ["trampoline" "run" "-m" "toyvm.bytecode-compiler"]
+            "binterpret" ["trampoline" "run" "-m" "toyvm.bytecode-interpreter"]}
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
